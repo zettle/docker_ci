@@ -41,4 +41,39 @@ server {
 ![](./readmeImg/xiaoguo.png)
 
 
+## 代码上传到linux服务器
+把整个项目上传到centos服务器的 `/root/svr/docker-cli` 路径下（node_modules）的都不要删除，其他原封不动都上传上去。
 
+
+## 编写docker任务
+1. 把nginx的配置保存到`/nginx/conf.d/docker.conf`，内容如下
+```conf
+server {
+    listen       80;
+  
+    location / {
+        root  /var/www/html;
+        index  index.html index.htm;
+    }
+
+    location ~ \.(gif|jpg|png)$ {
+        root /static;
+        index index.html index.htm;
+    }
+}
+```
+
+在`/docker-compose.yml`编写nginx的docker任务，内容如下
+```yml
+version: '3.1'
+services:
+  nginx:
+    restart: always
+    image: nginx
+    ports:
+      - 8091:80
+    volumes:
+      - ./nginx/conf.d/:/etc/nginx/conf.d
+      - ./frontend/dist:/var/www/html/
+      - ./static/:/static/
+```
